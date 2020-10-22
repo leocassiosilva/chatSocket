@@ -14,21 +14,14 @@ import java.util.logging.Logger;
 public class Servidor {
 
     public static void main(String[] args) {
-        try {
-            ServerSocket servidor = new ServerSocket(999); //Conexao
+        try (ServerSocket servidor = new ServerSocket(999)) {
             System.out.println("Aguardando conexão");
-            Socket conexao = servidor.accept(); //conexão aceita
-            System.out.println("Conexão efetuada " + conexao.getInetAddress().getHostAddress()); //Apresenta quando um cliente se conecta ao servidor
-
-            Scanner leitura = new Scanner(conexao.getInputStream());
-
-            while (leitura.hasNextLine()) {
-                System.out.println(leitura.nextLine());
+           while (true) {
+                Socket conexao = servidor.accept();
+                TratamentoClass tratamento = new TratamentoClass(conexao);
+                Thread thread = new Thread(tratamento);
+                thread.start();
             }
-            
-            leitura.close();
-            conexao.close();
-            servidor.close();
         } catch (IOException ex) {
             Logger.getLogger(Servidor.class.getName()).log(Level.SEVERE, null, ex);
         }
